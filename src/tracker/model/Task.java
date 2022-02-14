@@ -6,16 +6,16 @@ public class Task {
     private int id = 0; // идентификатор
     private String name; // Кратко описывающее суть задачи (например, «Переезд»).
     private String description; // Для раскрытия деталей задачи.
-    private String status; // 1. NEW - новая; 2. IN_PROGRESS - в процессе, 3. DONE - выполнена.
+    private Status status; // 1. NEW - новая; 2. IN_PROGRESS - в процессе, 3. DONE - выполнена.
 
-    public Task(String name, String description, String status) {
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
     // Конструктор необходимый для обновления задачи по ID
-    public Task(String name, String description, String status, int id) {
+    public Task(String name, String description, Status status, int id) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -46,11 +46,11 @@ public class Task {
         this.description = description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -66,8 +66,6 @@ public class Task {
 
     @Override
     public boolean equals(Object o) {
-        if (this.getClass().getName().equals(getClass().getName()))
-            return true;
         if (o == null || getClass() != o.getClass())
             return false;
         Task task = (Task) o;

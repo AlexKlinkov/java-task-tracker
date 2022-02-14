@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 public class Epic extends Task {
     int id = 0;
-    private String status = "NEW"; // Статус по умолчанию
+    private Status status = Status.NEW; // Статус по умолчанию
     ArrayList<Subtask> listWithAllSubTasks = new ArrayList<>(); // список всех подзадач эпика
 
-    public Epic(String name, String description, String status) {
+    public Epic(String name, String description, Status status) {
         super(name, description, status);
     }
 
     // Конструктор для обновления подзадач, указываем айди задачи, которую нужно обновить
-    public Epic(String name, String description, String status, int id) {
+    public Epic(String name, String description, Status status, int id) {
         super(name, description, status);
         this.id = id;
     }
@@ -35,7 +35,7 @@ public class Epic extends Task {
         this.listWithAllSubTasks = listWithAllSubTasks;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -50,12 +50,12 @@ public class Epic extends Task {
     }
 
     // Метод для установки статуса Епика
-    ArrayList<String> listOfAllStatusSubTasks = new ArrayList<>(); // Список со всеми статусами подзадач данного эпика
+    ArrayList<Status> listOfAllStatusSubTasks = new ArrayList<>(); // Список со всеми статусами подзадач данного эпика
 
-    public String setStatusForEpic() {
+    public Status setStatusForEpic() {
         listOfAllStatusSubTasks.clear(); // Удаляем значения от предыдущего эпика
         if (getListWithAllSubTasks().isEmpty()) {
-            return "NEW";
+            return Status.NEW;
         } else {
             // Возвращаем в цикле все подзадачи эпика
             for (int i = 0; i < getListWithAllSubTasks().size(); i++) {
@@ -77,15 +77,16 @@ public class Epic extends Task {
                 }
             }
             if (newNew > 0 && inProgress == 0 && done == 0) {
-                return "NEW";
+                return Status.NEW;
             } else if (newNew == 0 && inProgress == 0 && done > 0) {
-                return "DONE";
+                return Status.DONE;
             } else if ((newNew > 0 && done > 0) || inProgress > 0) {
-                return "IN_PROGRESS";
+                return Status.IN_PROGRESS;
             }
         }
-        return "";
+        return Status.NEW;
     }
 
 }
+
 

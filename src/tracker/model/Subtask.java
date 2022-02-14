@@ -4,13 +4,13 @@ public class Subtask extends Task {
     private Epic epic; // Подзадача приходит к конкретному эпику
     int id = 0; // идентификатор устанавливается менеджером
 
-    public Subtask(String name, String description, String status, Epic epic) {
+    public Subtask(String name, String description, Status status, Epic epic) {
         super(name, description, status);
         this.epic = epic;
     }
 
     // конструктор необходимый для обновления конкретной подзадачи, конкретного эпика по ID
-    public Subtask(String name, String description, String status, Epic epic, int id) {
+    public Subtask(String name, String description, Status status, Epic epic, int id) {
         super(name, description, status);
         this.epic = epic;
         this.id = id;
