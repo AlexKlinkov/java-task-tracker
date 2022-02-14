@@ -1,7 +1,5 @@
 package tracker.model;
 
-import java.util.Objects;
-
 public class Subtask extends Task {
     private Epic epic; // Подзадача приходит к конкретному эпику
     int id = 0; // идентификатор устанавливается менеджером
