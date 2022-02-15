@@ -251,6 +251,5 @@ public class InMemoryTaskManager implements TaskManager {
         }
         historyManager.getHistory().removeAll(newListForAllDelete); // Удаляем все объекты несуществующей задачи
                                                                                                         // из истории
-        newListForAllDelete.clear(); // отчищаем список для удаления
     }
 }
