@@ -3,17 +3,15 @@ package tracker.controllers;
 import tracker.model.Epic;
 import tracker.model.Subtask;
 import tracker.model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     HashMap<Integer, Task> saveTask = new HashMap<>(); // Коллекция для хранения отдельно стоящих задач.
     HashMap<Integer, Subtask> saveSubTask = new HashMap<>(); // Коллекция для хранения подзадач.
     HashMap<Integer, Epic> saveEpic = new HashMap<>(); // Коллекция для хранения сложных задач.
-    int newIdTask = 0; // счетчик для установки уникального значения ID для обычных задач
-    int newIdSubTask = 0; // счетчик для установки уникального значения ID для обычных задач
-    int newIdEpic = 0; // счетчик для установки уникального значения ID для сложных (эпических задач)
+    int newId = 0; // счетчик для установки уникального значений по ID (сквозное нумерование)
 
     HistoryManager historyManager;
 
@@ -26,24 +24,24 @@ public class InMemoryTaskManager implements TaskManager {
     public void createTask(Task task) { //
         if (task instanceof Subtask) { // Проверяем принадлежит ли объект данному классу
             Subtask subTaskSave = (Subtask) task; // Преобразуем объект в нужный нам тип
-            newIdSubTask++;                       // Получаем уникальный идентификатор для задачи
-            subTaskSave.setId(newIdSubTask);      // Устанавливаем уникальный идентификатор задаче
-            saveSubTask.put(newIdSubTask, subTaskSave); // Сохраняем объект в коллекцию
+            newId++;                       // Получаем уникальный идентификатор для задачи
+            subTaskSave.setId(newId);      // Устанавливаем уникальный идентификатор задаче
+            saveSubTask.put(newId, subTaskSave); // Сохраняем объект в коллекцию
             subTaskSave.getEpic().getListWithAllSubTasks().add(subTaskSave); // сохраняем подзадачу эпика в его список
             // всех подзадач
             subTaskSave.getEpic().setStatus(subTaskSave.getEpic().setStatusForEpic());// Присваиваем эпику
             // статус в соответствием с ТЗ
         } else if (task instanceof Epic) {
             Epic epicSave = (Epic) task;
-            newIdEpic++;
-            epicSave.setId(newIdEpic);
-            saveEpic.put(newIdEpic, epicSave); // Сохраняем эпическую задачу с тем статусом, с которым она пришла
+            newId++;
+            epicSave.setId(newId);
+            saveEpic.put(newId, epicSave); // Сохраняем эпическую задачу с тем статусом, с которым она пришла
             epicSave.setStatus(epicSave.setStatusForEpic()); // Присваиваем эпику статус в соответствием с ТЗ
         } else if (task instanceof Task) { // проверяем к какому классу относится объект
             Task taskSave = (Task) task; // Преобразуем объект в нужный нам класс
-            newIdTask++; // Увеличиваем значения счетчика, для установки уникального ID
-            taskSave.setId(newIdTask); // Присваиваем идентификационный номер новой задаче
-            saveTask.put(newIdTask, taskSave); // Сохраняем задачу в коллекцию
+            newId++; // Увеличиваем значения счетчика, для установки уникального ID
+            taskSave.setId(newId); // Присваиваем идентификационный номер новой задаче
+            saveTask.put(newId, taskSave); // Сохраняем задачу в коллекцию
         }
 
     }
@@ -91,23 +89,40 @@ public class InMemoryTaskManager implements TaskManager {
     // 2.2 Метод для удаления всех задач (отдельно стоящие задачи)
     @Override
     public void deleteAllTasks() {
-        saveTask.clear();
-        deleteNoneExistTask(); // если нет больше вообще задач, то их не должно быть и в истории
+        for (int i = 0; i <= newId; i++) { // если нет больше вообще задач, то их не должно быть и в истории
+            if (!(saveSubTask.get(i) instanceof Subtask) && !(saveEpic.get(i) instanceof Epic)) {
+                historyManager.remove(saveTask.get(i).getId()); // Удаляем задачи из истории
+            }
+        }
+        saveTask.clear(); // Удаляем задачу из колекции
     }
 
     // 2.2 Метод для удаления всех подзадач
     @Override
     public void deleteAllSubTasks() {
-        saveSubTask.clear();
-        deleteNoneExistTask(); // если нет больше вообще задач, то их не должно быть и в истории
+        for (int i = 0; i <= newId; i++) { // если нет больше подзадач, значит и эпиков не должно быть
+            if (saveSubTask.get(i) instanceof Subtask) {
+                historyManager.remove(saveSubTask.get(i).getId()); // Удаляем подзадачи из истории
+            } else if (saveEpic.get(i) instanceof Epic) {
+                historyManager.remove(saveEpic.get(i).getId()); // Удаляем эпики из истории
+            }
+        }
+        saveSubTask.clear(); // Удаляем все подзадачи из коллекции
+        saveEpic.clear(); // Удаляем все эпики из коллекции
     }
 
     // 2.2 Метод для удаления всех сложных (эпических) задач
     @Override
     public void deleteAllEpic() {
+        for (int i = 0; i <= newId; i++) { // значит эпика и подзадач не должно быть больше в истории
+            if (saveSubTask.get(i) instanceof Subtask) {
+                historyManager.remove(saveSubTask.get(i).getId());
+            } else if (saveEpic.get(i) instanceof Epic) {
+                historyManager.remove(saveEpic.get(i).getId());
+            }
+        }
         saveEpic.clear();
         saveSubTask.clear(); // Если нет больше ни одной эпической задачи, значит и не должно быть больше подзадач
-        deleteNoneExistTask(); // если нет больше вообще задач, то их не должно быть и в истории
     }
 
     // 2.3 Метод для получения отдельно стоящей задачи по идентификатору
@@ -140,7 +155,8 @@ public class InMemoryTaskManager implements TaskManager {
                 return;
             }
         }
-        deleteNoneExistTask(); // если предыдущей задачи уже нет в коллекции, то ее не должно быть и в истории
+        historyManager.remove(task.getId()); // если предыдущей задачи уже нет в коллекции, то ее не должно быть и
+                                                                                                            // в истории
     }
 
     // 2.5 Обновление подзадачи по идентификатору
@@ -167,7 +183,8 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
         }
-        deleteNoneExistTask(); // если предыдущей задачи уже нет в коллекции, то ее не должно быть и в истории
+        historyManager.remove(subtask.getId()); // если предыдущей задачи уже нет в коллекции, то ее не должно быть и
+                                                                                                            // в истории
     }
 
     // 2.5 Обновление задачи (сложные) эпические по идентификатору
@@ -181,14 +198,15 @@ public class InMemoryTaskManager implements TaskManager {
                 return;
             }
         }
-        deleteNoneExistTask(); // если предыдущей задачи уже нет в коллекции, то ее не должно быть и в истории
+        historyManager.remove(epic.getId());
+        ; // если предыдущей задачи уже нет в коллекции, то ее не должно быть и в истории
     }
 
     // 2.6 Удаление отдельно стоящей задачи по идентификатору
     @Override
     public void deleteTaskById(int id) {
         saveTask.remove(id);
-        deleteNoneExistTask(); // Убераем из истории несуществующие задачи
+        historyManager.remove(id); // Убераем из истории несуществующие задачи
     }
 
     // 2.6 Удаление подзадачи по идентификатору
@@ -199,57 +217,38 @@ public class InMemoryTaskManager implements TaskManager {
         // Удаляем подзадачу из списка подзадач относящихся к эпику
         Epic epic = saveSubTask.get(id).getEpic(); // Эпик данной подзадачи
         ArrayList<Subtask> listOfSubTasks = epic.getListWithAllSubTasks(); // список подзадач данного эпика
-        for (int i = 0; i < listOfSubTasks.size(); i++) { // проходимся по списку подзадач
-            if (listOfSubTasks.get(i).equals(saveSubTask.get(id))) { // и при нахождение удаляем ее из списка подзадач
-                epic.getListWithAllSubTasks().remove(saveSubTask.get(id));
-            }
+        if (listOfSubTasks.contains(saveSubTask.get(id))) { // если список подзадач содержит данную задачу,
+            // то удаляем его из списка эпика с подзадачами
+            listOfSubTasks.remove(saveSubTask.get(id));
+            saveSubTask.remove(id); // удаляем саму подзадачу из коллекции
         }
-        epic.setStatus(epic.setStatusForEpic()); // обновляем статус эпика
-        saveSubTask.remove(id); // удаляем саму подзадачу
-        deleteNoneExistTask(); // Убераем из истории несуществующие задачи
+        if (listOfSubTasks.isEmpty()) { // Если не осталось больше подзадач у эпика, удаляем сам эпик
+            saveEpic.remove(id); // Удаляем сам эпик из коллекции
+            historyManager.remove(epic.getId()); // Убераем из истории эпик, если у него не осталось подзадач
+        } else { // иначе обновляем статус эпика
+            epic.setStatus(epic.setStatusForEpic()); // обновляем статус эпика
+        }
+        historyManager.remove(id); // Убераем из истории несуществующую задачу (ПОДЗАДАЧУ)
     }
 
     // 2.6 Удаление сложной (эпической) задачи по идентификатору
     @Override
     public void deleteEpicById(int id) {
         // Если эпик будет удален, его подзадачи тоже должны быть удалены
-        ArrayList<Subtask> listofAllSubTasks = saveEpic.get(id).getListWithAllSubTasks(); // список подзадач
-        for (int i = 0; i < listofAllSubTasks.size(); i++) {
-            for (Subtask subtask : saveSubTask.values()) {
-                if (listofAllSubTasks.get(i).getId() == subtask.getId()) {
-                    saveSubTask.remove(subtask.getId()); // Удаляем все подзадачи из коллекции, перед удалением эпика
-                }
+        for (Subtask subtask : saveEpic.get(id).getListWithAllSubTasks()) { // Проходимся по списку подзадач Эпика
+            if (saveSubTask.containsValue(subtask)) { // Если задача еще не удалена из коллекции, удаляем ее
+                historyManager.remove(subtask.getId()); // Убераем из истории несуществующую задачу (Подзадачи)
+                saveSubTask.remove(subtask);
             }
         }
         saveEpic.get(id).getListWithAllSubTasks().clear(); // Удаляем все подзадачи данного эпика в эпик-списке
-        saveEpic.remove(id); // Удаляем сам эпик
-        deleteNoneExistTask(); // Убераем из истории несуществующие задачи
+        saveEpic.remove(id); // Удаляем сам эпик из коллекции
+        historyManager.remove(id); // Убераем из истории несуществующие задачи (Сам эпик)
     }
 
     // 3.1 Метод для получения списка всех подзадач определенного эпика
     @Override
     public ArrayList<Subtask> getAllSubTasksAttitudeToEpic(Epic epic) {
         return epic.getListWithAllSubTasks();
-    }
-
-    boolean taskIsExist; // Значение по умолчанию
-
-    void deleteNoneExistTask() {
-        List<Task> newListForAllDelete = new ArrayList<>(); // Список с элементом для удаления, чтоб разом удалить все
-        // повторения несуществующих задач из истории
-        for (Task task : historyManager.getHistory()) {
-            if (saveTask.containsValue(task)) {
-                taskIsExist = true;
-            } else if (saveSubTask.containsValue(task)) {
-                taskIsExist = true;
-            } else if (saveEpic.containsValue(task)) {
-                taskIsExist = true;
-            } else if (taskIsExist == false) {
-                newListForAllDelete.add(task); // добавляем в список на удаление
-            }
-            taskIsExist = false;
-        }
-        historyManager.getHistory().removeAll(newListForAllDelete); // Удаляем все объекты несуществующей задачи
-                                                                                                        // из истории
     }
 }
