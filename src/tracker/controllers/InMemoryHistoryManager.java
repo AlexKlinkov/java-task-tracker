@@ -110,4 +110,3 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 }
-

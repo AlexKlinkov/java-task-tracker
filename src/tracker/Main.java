@@ -31,3 +31,4 @@ public class Main {
         System.out.println(historyManager.getHistory()); // Печатаем историю заново
     }
 }
+

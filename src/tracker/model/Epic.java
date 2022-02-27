@@ -86,6 +86,4 @@ public class Epic extends Task {
         }
         return Status.NEW;
     }
-
 }
-
