@@ -59,8 +59,6 @@ public class InMemoryHistoryManager implements HistoryManager {
                 myNode<Task> newMyNode = new myNode(prev, task, null); // Добавляем новое значение
                 tail.setNext(newMyNode); // Предыдущему элементу даем ссылку на новый элемент,
                 // для предыдущего элемента, новый элемент будет next
-                myNode<Task> task1 = prev.getPrevious();
-                myNode<Task> task2 = prev.getNext();
                 tail = newMyNode; // предыдущий хвос, меняется на новый хвост
                 myNodeTask.put(task.getId(), newMyNode); // добавляем значение (ноду-задачу) в мапу
                 this.size += 1; // Увеличиваем размер списка на единицу при добавлении нового элемента
@@ -93,17 +91,23 @@ public class InMemoryHistoryManager implements HistoryManager {
             } else if (taskNode.equals(head) && !(taskNode.equals(tail))) { // если удаляемый элемент голова
                 head = next; // Следующий элемент после удаляемого становится головой
                 head.setPrevious(null); // У головы не должно быть ссылки на предыдйщий элемент, так как его нет
-                head.setNext(next); // Ссылка на следующий элемент новой головы
-                // это ссылка на следующий элемент после удаляемого нода
+                if (this.size > 1) { // Проверяем, что в процессе выполнения метода осталось больше чем 1 элемент
+                    head.setNext(next); // Ссылка на следующий элемент новой головы это ссылка на следующий элемент
+                    // после удаляемого нода
+                    this.size -= 1; // Уменьшаем размер списка на единицу при удалении нового элемента
+                } else { // иначе обнуляем ссылку на следующий элемент
+                    head.setNext(null);
+                }
                 myNodeTask.remove(taskNode); // Удаляем из мапы
-                this.size -= 1; // Уменьшаем размер списка на единицу при удалении нового элемента
             } else if (taskNode.equals(tail) && !(taskNode.equals(head))) { // если удаляем хвост
                 tail = prev; // Предыдущий элемент становится хвостом
                 prev.setNext(null); // У хвоста нет ссылки на следующий элемент
                 myNodeTask.remove(taskNode); // Удаляем из мапы
                 this.size -= 1; // Уменьшаем размер списка на единицу при удалении нового элемента
             } else if (taskNode.equals(head) && taskNode.equals(tail)) { // если в списке всего один элемент
-                taskNode.setData(null); // удаляем значение, ссылок на другие элементы и так нет
+                taskNode.setPrevious(null); // Удаляем ссылку на предыдущий элемент
+                taskNode.setData(null); // удаляем значение
+                taskNode.setNext(null); // Удаляем ссылку на следующий элемент
                 myNodeTask.remove(taskNode); // Удаляем из мапы
                 this.size -= 1; // Уменьшаем размер списка на единицу при удалении нового элемента
             }
