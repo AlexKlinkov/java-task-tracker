@@ -7,19 +7,20 @@ import java.util.HashMap;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private myLinkedList<Task> historyOfTask = new myLinkedList<>(); // список для добавления задач в историю
+    protected myLinkedList<Task> historyOfTask = new myLinkedList<>(); // список для добавления задач в историю
 
     @Override
     public void addTask(Task task) {
-        if (historyOfTask.getTasks().contains(task)) { // проверяем содержится ли этот элемент уже в истории
-            myNode<Task> deleteNode = historyOfTask.getMyNodeTask().get(task.getId()); // Получаю ноду с задачей
-            historyOfTask.removeNode(deleteNode); // удаляем прошлый просмотр
-            historyOfTask.linkLast(task); // Добавляем новый
-        } else { // Если такого элемента в истории не было
-            historyOfTask.linkLast(task); // Сразу же добавляем новый элемент в историю просмотров
+        if (task != null) {
+            if (historyOfTask.getTasks().contains(task)) { // проверяем содержится ли этот элемент уже в истории
+                myNode<Task> deleteNode = historyOfTask.getMyNodeTask().get(task.getId()); // Получаю ноду с задачей
+                historyOfTask.removeNode(deleteNode); // удаляем прошлый просмотр
+                historyOfTask.linkLast(task); // Добавляем новый
+            } else { // Если такого элемента в истории не было
+                historyOfTask.linkLast(task); // Сразу же добавляем новый элемент в историю просмотров
+            }
         }
     }
-
 
     @Override
     public void remove(int id) {
@@ -48,20 +49,22 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         public void linkLast(Task task) { // метод добавляет задачу в конец списка
-            if (head == null) { // проверяем пустой ли список
-                myNode<Task> newMyNode = new myNode(null, task, null); // Добавляем новое значение
-                head = newMyNode; // единственное значение оно и есть и голова и хвост одновременно
-                tail = newMyNode;
-                myNodeTask.put(task.getId(), newMyNode); // добавляем значение (ноду-задачу) в мапу
-                this.size += 1; // Увеличиваем размер списка на единицу при добавлении нового элемента
-            } else { // если список не пустой и в нем есть хоть одна нода-задача
-                myNode<Task> prev = tail; // ссылка на предыдущий элемент, это бывший хвост
-                myNode<Task> newMyNode = new myNode(prev, task, null); // Добавляем новое значение
-                tail.setNext(newMyNode); // Предыдущему элементу даем ссылку на новый элемент,
-                // для предыдущего элемента, новый элемент будет next
-                tail = newMyNode; // предыдущий хвос, меняется на новый хвост
-                myNodeTask.put(task.getId(), newMyNode); // добавляем значение (ноду-задачу) в мапу
-                this.size += 1; // Увеличиваем размер списка на единицу при добавлении нового элемента
+            if (task != null) {
+                if (head == null) { // проверяем пустой ли список
+                    myNode<Task> newMyNode = new myNode(null, task, null); // Добавляем новое значение
+                    head = newMyNode; // единственное значение оно и есть и голова и хвост одновременно
+                    tail = newMyNode;
+                    myNodeTask.put(task.getId(), newMyNode); // добавляем значение (ноду-задачу) в мапу
+                    this.size += 1; // Увеличиваем размер списка на единицу при добавлении нового элемента
+                } else if (head != null) { // если список не пустой и в нем есть хоть одна нода-задача
+                    // myNode<Task> prev = tail; // ссылка на предыдущий элемент, это бывший хвост
+                    myNode<Task> newMyNode = new myNode(tail, task, null); // Добавляем новое значение
+                    tail.setNext(newMyNode); // Предыдущему элементу даем ссылку на новый элемент,
+                    // для предыдущего элемента, новый элемент будет next
+                    tail = newMyNode; // предыдущий хвос, меняется на новый хвост
+                    myNodeTask.put(task.getId(), newMyNode); // добавляем значение (ноду-задачу) в мапу
+                    this.size += 1; // Увеличиваем размер списка на единицу при добавлении нового элемента
+                }
             }
         }
 
@@ -73,6 +76,9 @@ public class InMemoryHistoryManager implements HistoryManager {
                 while (nextLink != null) { // и если следующий элемент есть, добавляем его в ArrayList
                     arrayListForReturn.add(nextLink.data);
                     nextLink = myNodeTask.get(nextLink.data.getId()).getNext(); // Вставляем следующий элемент
+                    if (head.getData() == null) {
+                        historyOfTask.removeNode(head);
+                    }
                 }
             }
             return arrayListForReturn;
@@ -91,13 +97,19 @@ public class InMemoryHistoryManager implements HistoryManager {
             } else if (taskNode.equals(head) && !(taskNode.equals(tail))) { // если удаляемый элемент голова
                 head = next; // Следующий элемент после удаляемого становится головой
                 head.setPrevious(null); // У головы не должно быть ссылки на предыдйщий элемент, так как его нет
+
                 if (this.size > 1) { // Проверяем, что в процессе выполнения метода осталось больше чем 1 элемент
                     head.setNext(next); // Ссылка на следующий элемент новой головы это ссылка на следующий элемент
                     // после удаляемого нода
+
                     this.size -= 1; // Уменьшаем размер списка на единицу при удалении нового элемента
+
+
                 } else { // иначе обнуляем ссылку на следующий элемент
                     head.setNext(null);
                 }
+
+                this.size -= 1; // Уменьшаем размер списка на единицу при удалении нового элемента
                 myNodeTask.remove(taskNode); // Удаляем из мапы
             } else if (taskNode.equals(tail) && !(taskNode.equals(head))) { // если удаляем хвост
                 tail = prev; // Предыдущий элемент становится хвостом
@@ -114,3 +126,4 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 }
+

@@ -6,6 +6,7 @@ public class Epic extends Task {
     int id = 0;
     private Status status = Status.NEW; // Статус по умолчанию
     ArrayList<Subtask> listWithAllSubTasks = new ArrayList<>(); // список всех подзадач эпика
+    private TypeOfTask TYPE = TypeOfTask.EPIC; // Поле с типом задачи
 
     public Epic(String name, String description, Status status) {
         super(name, description, status);
@@ -68,9 +69,9 @@ public class Epic extends Task {
             int inProgress = 0;
             int done = 0;
             for (int j = 0; j < listOfAllStatusSubTasks.size(); j++) {
-                if (listOfAllStatusSubTasks.get(j).equals("NEW")) {
+                if (listOfAllStatusSubTasks.get(j).equals(Status.NEW)) {
                     newNew++;
-                } else if (listOfAllStatusSubTasks.get(j).equals("IN_PROGRESS")) {
+                } else if (listOfAllStatusSubTasks.get(j).equals(Status.IN_PROGRESS)) {
                     inProgress++;
                 } else {
                     done++;
@@ -86,4 +87,20 @@ public class Epic extends Task {
         }
         return Status.NEW;
     }
+
+    @Override
+    public Status getStatus() {
+        return status;
+    }
+
+    @Override
+    public TypeOfTask getTYPE() {
+        return TYPE;
+    }
+
+    @Override
+    public void setTYPE(TypeOfTask TYPE) {
+        this.TYPE = TYPE;
+    }
 }
+

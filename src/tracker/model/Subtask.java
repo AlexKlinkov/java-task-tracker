@@ -3,6 +3,7 @@ package tracker.model;
 public class Subtask extends Task {
     private Epic epic; // Подзадача приходит к конкретному эпику
     int id = 0; // идентификатор устанавливается менеджером
+    private TypeOfTask TYPE = TypeOfTask.SUBTASK; // Поле с типом задачи
 
     public Subtask(String name, String description, Status status, Epic epic) {
         super(name, description, status);
@@ -42,6 +43,16 @@ public class Subtask extends Task {
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +
                 '}';
+    }
+
+    @Override
+    public TypeOfTask getTYPE() {
+        return TYPE;
+    }
+
+    @Override
+    public void setTYPE(TypeOfTask TYPE) {
+        this.TYPE = TYPE;
     }
 }
 

@@ -1,5 +1,8 @@
 package tracker.controllers;
 
+import java.io.File;
+import java.io.IOException;
+
 public class Managers {
 
     private static final HistoryManager historyManager = new InMemoryHistoryManager();
@@ -12,4 +15,10 @@ public class Managers {
     public static HistoryManager getDefaultHistory() {
         return historyManager;
     }
+
+    public static FileBackedTasksManager getDefaultBackedTaskManager(String file) throws IOException {
+        FileBackedTasksManager backedTaskManager = new FileBackedTasksManager(historyManager, new File(file));
+        return backedTaskManager;
+    }
+
 }

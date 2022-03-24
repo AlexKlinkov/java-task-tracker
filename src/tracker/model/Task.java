@@ -7,6 +7,7 @@ public class Task {
     private String name; // Кратко описывающее суть задачи (например, «Переезд»).
     private String description; // Для раскрытия деталей задачи.
     private Status status; // 1. NEW - новая; 2. IN_PROGRESS - в процессе, 3. DONE - выполнена.
+    private TypeOfTask TYPE = TypeOfTask.TASK; // Поле с типом задачи
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -76,5 +77,13 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, status);
+    }
+
+    public TypeOfTask getTYPE() {
+        return TYPE;
+    }
+
+    public void setTYPE(TypeOfTask TYPE) {
+        this.TYPE = TYPE;
     }
 }

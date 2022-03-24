@@ -1,7 +1,6 @@
 package tracker.controllers;
 
 import tracker.model.Task;
-
 import java.util.List;
 
 public interface HistoryManager { // интерфейс для управления историей просмотра
@@ -11,4 +10,5 @@ public interface HistoryManager { // интерфейс для управлен�
     void remove(int id); // метод для удаление задачи по id
 
     List<Task> getHistory(); // Возвращает список с историей просмотров задач
+
 }
