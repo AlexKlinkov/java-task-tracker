@@ -9,10 +9,9 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 
-public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
+public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private static File file = new File(
-            "C:\\Users\\User\\Desktop\\secondSprint\\java-sprint2-hw\\src\\OUTPUT.csv");
+    private static File file;
     // Поле класса для указания пути и имени файла (куда будет производится сохранения состояния менеджера)
     Comparator<Integer> comparatorID = new Comparator<>() { // Для правильной сортировки в мапе-дерево
         @Override
@@ -28,7 +27,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         this.file = file;
     }
 
-    public void save() throws IOException { // сохраняет состояние менеджера в файл
+    public void save() { // сохраняет состояние менеджера в файл
 
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file,
                 false), Charset.forName("Windows-1251")))) {
@@ -47,11 +46,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             writer.write("\n");
             writer.write(toString(historyManager));// Сохраняет историю в файл
         } catch (IOException exception) {
-            try {
-                throw new ManagerSaveException("НЕУДАЛОСЬ СОХРАНИТЬ ДАННЫЕ В ФАЙЛ", exception.getCause());
-            } catch (ManagerSaveException e) {
-                e.printStackTrace();
-            }
+            throw new ManagerSaveException("НЕУДАЛОСЬ СОХРАНИТЬ ДАННЫЕ В ФАЙЛ", exception.getCause());
         }
     }
 
@@ -90,15 +85,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return eventually.replaceFirst(",", "");
     }
 
-    List<String> allLineOurFile = new ArrayList<>(); // Список со всеми строками файла
-
-    public FileBackedTasksManager loadFromFile(File file) throws IOException { // Метод восстанавливает данные
+    public static FileBackedTasksManager loadFromFile(File file) { // Метод восстанавливает данные
         // менеджера из файла при запуске программы
-        HistoryManager historyManager = new InMemoryHistoryManager();
-        FileBackedTasksManager backedTasksManager = new FileBackedTasksManager(historyManager, file); // новый менеджер
         // для возвращения с задачами и историей из файла
         try (Scanner reader = new Scanner(new BufferedReader(new InputStreamReader(
                 new FileInputStream(file), "Windows-1251")))) {
+            List<String> allLineOurFile = new ArrayList<>(); // Список со всеми строками файла
+            HistoryManager historyManager = new InMemoryHistoryManager();
+            FileBackedTasksManager backedTasksManager = new FileBackedTasksManager(historyManager, file); // новый
+                                                                                                            // менеджер
             // восстанавливаем задачи для нашего менеджера из файла
             //сначала все Эпики, иначе некорректно восстановятся подзадачи
             while (reader.hasNext()) {
@@ -134,17 +129,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     backedTasksManager.historyManager.addTask(backedTasksManager.getEpicById(id));
                 }
             }
+            return backedTasksManager;
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Файл " + file.getName() + " не найден");
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
-        return backedTasksManager;
+        return null;
     }
 
-    public Task fromString(String value) { // метод создания из строки задачи
+    public static Task fromString(String value) { // метод создания из строки задачи
         if (!value.isEmpty()) {
             String[] attributeOfTask = value.split(","); // Получаем массив состоящие из полей задачи
 
             if (attributeOfTask[1].equals("SUBTASK")) {
                 return new Subtask(attributeOfTask[2], attributeOfTask[4], Status.valueOf(attributeOfTask[3]),
-                        getEpicById(Integer.parseInt(attributeOfTask[6])), Integer.parseInt(attributeOfTask[0]));
+                        Integer.parseInt(attributeOfTask[6]), Integer.parseInt(attributeOfTask[0]));
             } else if (attributeOfTask[1].equals("EPIC")) {
                 return new Epic(attributeOfTask[2], attributeOfTask[4], Status.valueOf(attributeOfTask[3]),
                         Integer.parseInt(attributeOfTask[0]));
@@ -227,9 +228,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public static void main(String[] args) throws IOException {
         ///// ТЕСТИМ ЗАПИСЬ В ФАЙЛ И ПРОЧТЕНИЕ ИЗ ФАЙЛА С ВЫВОДОМ В КОНСОЛЬ
         // 1. Создаем задачи
+
         FileBackedTasksManager backedTasksManager =
-                Managers.getDefaultBackedTaskManager("C:\\Users\\User\\Desktop\\secondSprint\\" +
-                        "java-sprint2-hw\\src\\OUTPUT.csv"); // создали менеджера отве-
+                Managers.getDefaultBackedTaskManager("OUTPUT.csv"); // создали менеджера отве-
         // чающего за сохранения состояния в файл
         backedTasksManager.createTask(new Task("Поздравить друга с днем рождения",
                 "Подарить подарок", Status.NEW));
@@ -246,16 +247,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         backedTasksManager.save();
 
         // 4. Проверяем как метод восстанавливает в мапы задачи, подзадачи и эпики
-        File newFile = new File("C:\\Users\\User\\Desktop\\secondSprint\\java-sprint2-hw\\src\\OUTPUT.csv");
+        File newFile = new File("OUTPUT.csv");
         System.out.println();
         System.out.println("Выводим задачи из файла в консоль");
-        System.out.println(backedTasksManager.loadFromFile(newFile).getSaveTask()); // Задачи
-        System.out.println(backedTasksManager.loadFromFile(newFile).getSaveEpic()); // Подзадачи
-        System.out.println(backedTasksManager.loadFromFile(newFile).getSaveSubTask()); // Эпики
+        System.out.println(loadFromFile(newFile).getSaveTask()); // Задачи
+        System.out.println(loadFromFile(newFile).getSaveEpic()); // Подзадачи
+        System.out.println(loadFromFile(newFile).getSaveSubTask()); // Эпики
         System.out.println();
 
         // 5. Проверяем как метод восстанавливает историю из файла
         System.out.println("Выводим в консоль историю просмотров из файла");
-        System.out.println(backedTasksManager.loadFromFile(newFile).getHistoryManager().getHistory());
+        System.out.println(loadFromFile(newFile).getHistoryManager().getHistory());
     }
 }
