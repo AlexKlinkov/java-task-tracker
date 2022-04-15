@@ -1,20 +1,25 @@
 package tracker.model;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task {
     int id = 0;
-    private Status status = Status.NEW; // Статус по умолчанию
+    public Status status = Status.NEW; // Статус по умолчанию
     ArrayList<Subtask> listWithAllSubTasks = new ArrayList<>(); // список всех подзадач эпика
     private TypeOfTask TYPE = TypeOfTask.EPIC; // Поле с типом задачи
+    LocalDateTime endTime;
 
-    public Epic(String name, String description, Status status) {
-        super(name, description, status);
+    public Epic(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        super(name, description, status, startTime, duration);
     }
 
     // Конструктор для обновления подзадач, указываем айди задачи, которую нужно обновить
-    public Epic(String name, String description, Status status, int id) {
-        super(name, description, status);
+    public Epic(String name, String description, Status status, int id, LocalDateTime startTime, Duration duration) {
+        super(name, description, status, id, startTime, duration);
         this.id = id;
     }
 
@@ -34,6 +39,7 @@ public class Epic extends Task {
 
     public void setListWithAllSubTasks(ArrayList<Subtask> listWithAllSubTasks) {
         this.listWithAllSubTasks = listWithAllSubTasks;
+        setStatusForEpic();
     }
 
     public void setStatus(Status status) {
@@ -46,7 +52,10 @@ public class Epic extends Task {
                 "id=" + id +
                 ", name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
-                ", status='" + status + '\'' +
+                ", status=" + status +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
+                ", endTime=" + endTime +
                 '}';
     }
 
@@ -54,7 +63,7 @@ public class Epic extends Task {
     ArrayList<Status> listOfAllStatusSubTasks = new ArrayList<>(); // Список со всеми статусами подзадач данного эпика
 
     public Status setStatusForEpic() {
-        listOfAllStatusSubTasks.clear(); // Удаляем значения от предыдущего эпика
+        listOfAllStatusSubTasks.clear(); // очищаем список перед каждым вызовом метода
         if (getListWithAllSubTasks().isEmpty()) {
             return Status.NEW;
         } else {
@@ -78,17 +87,22 @@ public class Epic extends Task {
                 }
             }
             if (newNew > 0 && inProgress == 0 && done == 0) {
+                setStatus(Status.NEW); // Изменяем само поле со статусом
+                setTimeForEpic(); // Расчитываем новые поля старта, продолжительности и окончания эпика
                 return Status.NEW;
             } else if (newNew == 0 && inProgress == 0 && done > 0) {
+                setStatus(Status.DONE); // Изменяем само поле со статусом
+                setTimeForEpic(); // Расчитываем новые поля старта, продолжительности и окончания эпика
                 return Status.DONE;
             } else if ((newNew > 0 && done > 0) || inProgress > 0) {
+                setStatus(Status.IN_PROGRESS); // Изменяем само поле со статусом
+                setTimeForEpic(); // Расчитываем новые поля старта, продолжительности и окончания эпика
                 return Status.IN_PROGRESS;
             }
         }
         return Status.NEW;
     }
 
-    @Override
     public Status getStatus() {
         return status;
     }
@@ -101,6 +115,45 @@ public class Epic extends Task {
     @Override
     public void setTYPE(TypeOfTask TYPE) {
         this.TYPE = TYPE;
+    }
+
+
+    public void setTimeForEpic() { // Метод для расчета полей времени для эпика на основе его подзадач
+        if (!listWithAllSubTasks.isEmpty()) {
+            LocalDateTime startFirstSubTask = LocalDateTime.of(3000, 1, 1, 0, 0);
+            // Время начала задачи (значение по умолчанию)
+            LocalDateTime endTimeOfAllSubTask = LocalDateTime.of(1970, 1, 1, 0, 0);
+            // Время завершение задачи (значение по умолчанию)
+            boolean turnOn = false; // Значение по умолчанию
+            for (Subtask subtask : listWithAllSubTasks) {
+                if (subtask.getStartTime() != null && subtask.getDuration() != null) {
+                    if (subtask.getStartTime().isBefore(startFirstSubTask)) {
+                        startFirstSubTask = subtask.getStartTime(); // Старт самой ранней подзадачи
+                    }
+                    if (subtask.getStartTime().plus(subtask.getDuration()).isAfter(endTimeOfAllSubTask)) {
+                        endTimeOfAllSubTask = subtask.getStartTime().plus(subtask.getDuration()); // Конец самой поздней
+                        // подзадачи
+                    }
+                    turnOn = true; // если есть хоть одна подзадача у эпика, у которой не пустые поля времени
+                }
+            }
+            if (turnOn) { // Изменяем поля эпика на основе подзадач. Если нет подходящих подзадач или их нет вовсе,
+                // то оставляем поля, которые были присвоены эпику при его создании.
+                this.startTime = startFirstSubTask;
+                this.duration = Duration.between(startFirstSubTask, endTimeOfAllSubTask);
+                this.endTime = endTimeOfAllSubTask;
+            }
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Epic epic = (Epic) o;
+        return id == epic.id && Objects.equals(((Epic) o).getName(), epic.getName()) &&
+                Objects.equals(((Epic) o).getDescription(), epic.getDescription()) &&
+                Objects.equals(status, epic.status);
     }
 }
 

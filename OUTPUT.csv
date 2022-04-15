@@ -1,7 +1,7 @@
-id,type,name,status,description,epic
-1,TASK,Поздравить друга с днем рождения,NEW,Подарить подарок,TASK1,
-2,EPIC,Вылечиться,IN_PROGRESS,Посетить врачей,EPIC2,
-3,SUBTASK,Посетить врача №1,IN_PROGRESS,Записаться на прием,SUBTASK3,2
-4,SUBTASK,Посетить врача №2,DONE,Записаться на прием,SUBTASK4,2
+id,type,name,status,description,epic,startOfTask,duration
+1,TASK,Поздравить друга с днем рождения,NEW,Подарить подарок,TASK1, ,2022-04-01T12:00,PT2H
+2,EPIC,Вылечиться,IN_PROGRESS,Посетить врачей,EPIC2, ,2022-04-01T12:00,PT2H
+3,SUBTASK,Посетить врача №1,IN_PROGRESS,Записаться на прием,SUBTASK3,2,2022-04-01T12:00,PT2H
+4,SUBTASK,Посетить врача №2,DONE,Записаться на прием,SUBTASK4,2,2022-04-01T12:00,PT2H
 
 1,2

@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    protected myLinkedList<Task> historyOfTask = new myLinkedList<>(); // список для добавления задач в историю
+    private myLinkedList<Task> historyOfTask = new myLinkedList<>(); // список для добавления задач в историю
 
     @Override
     public void addTask(Task task) {
@@ -24,8 +24,10 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        myNode<Task> task = historyOfTask.getMyNodeTask().get(id); // Получаю ноду с задачей
-        historyOfTask.removeNode(task);
+        if (historyOfTask.getMyNodeTask().get(id) != null) {
+            myNode<Task> task = historyOfTask.getMyNodeTask().get(id); // Получаю ноду с задачей
+            historyOfTask.removeNode(task);
+        }
     }
 
     @Override
@@ -33,8 +35,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         return historyOfTask.getTasks();
     }
 
-    public myLinkedList<Task> getHistoryOfTask() {
-        return historyOfTask;
+    @Override
+    public int getSize() {
+        return historyOfTask.size;
     }
 
     class myLinkedList<T extends Task> {
@@ -126,4 +129,3 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 }
-
