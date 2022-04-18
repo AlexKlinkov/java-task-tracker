@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tracker.model.Epic;
 import tracker.model.Status;
@@ -11,11 +12,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EpicTest {
 
+    LocalDateTime startTime;
+    Duration duration;
+
+    @BeforeEach
+    public void init () {
+        startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
+        duration = Duration.ofHours(2);
+    }
+
     /// 1. Для расчета статуса эпика
     @Test
     public void shouldBeStatusNewIfListWithSubtasksIsEmpty() { // а. Пустой список подзадач
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Построить дом", "Присмотреть участок", Status.NEW,
                 startTime,
                 duration);
@@ -25,8 +33,6 @@ public class EpicTest {
 
     @Test
     public void shouldBeStatusNewIfAllSubtaskWithStatusNew() { // b. Все подзадачи со статусом NEW
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Построить дом", "Присмотреть участок", Status.NEW, startTime, duration);
         Subtask subtask1 = new Subtask("Найти мастера", "Провести несколько встреч", Status.NEW, epic,
                 startTime, duration);
@@ -40,8 +46,6 @@ public class EpicTest {
 
     @Test
     public void shouldBeStatusDoneIfAllSubtaskWithStatusDone() { // c. Все подзадачи со статусом DONE
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Построить дом", "Присмотреть участок", Status.NEW,
                 startTime, duration);
         Subtask subtask1 = new Subtask("Найти мастера", "Провести несколько встреч", Status.DONE, epic,
@@ -56,8 +60,6 @@ public class EpicTest {
 
     @Test
     public void shouldBeStatusInProgressIfSubtaskWithStatusNewAndDone() { // d. Подзадачи со статусами NEW и DONE
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Построить дом", "Присмотреть участок", Status.NEW,
                 startTime, duration);
         Subtask subtask1 = new Subtask("Найти мастера", "Провести несколько встреч", Status.NEW, epic,
@@ -72,8 +74,6 @@ public class EpicTest {
 
     @Test
     public void shouldBeStatusInProgressIfAllSubtaskNotHaveStatusNewOrDone() { // e. Подзадачи со статусом IN_PROGRESS
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Построить дом", "Присмотреть участок", Status.NEW,
                 startTime, duration);
         Subtask subtask1 = new Subtask("Найти мастера", "Провести несколько встреч", Status.IN_PROGRESS,

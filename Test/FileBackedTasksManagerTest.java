@@ -41,8 +41,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     @Test
     public void saveTestShouldBeNotEmptyFileEpicWithoutSubTask() {
         // b. Эпик без подзадач
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Починить холодильник", "Вызвать мастера", Status.NEW, startTime, duration);
         manager.createTask(epic); // Создали и записали эпик в мапу
         manager.save(); // Записываем эпик в файл
@@ -52,8 +50,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     @Test
     public void saveTestShouldNotEmptyFile() {
         // c. Пустой список истории.
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task = new Task("Починить холодильник", "Вызвать мастера", Status.NEW, startTime, duration);
         manager.createTask(task); // Создали и записали задачу в мапу
         manager.getHistoryManager().getHistory().clear(); // Очищаем историю.
@@ -72,8 +68,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     @Test
     public void loadFromFileTestShouldNotEmptyMapWithEpic() {
         // b. Эпик без подзадач
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Починить холодильник", "Вызвать мастера", Status.NEW, startTime, duration);
         manager.createTask(epic); // Создали и записали эпик в мапу
         manager.save(); // Записываем задачу в файл
@@ -86,8 +80,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     @Test
     public void loadFromFileTestShouldNotEmptyMap() {
         // с. Пустой список истории
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task = new Task("Починить холодильник", "Вызвать мастера", Status.NEW, startTime, duration);
         manager.createTask(task); // Создали и записали задачу в мапу
         manager.save(); // Записываем задачу в файл

@@ -284,12 +284,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         // создали менеджера отвечающего за сохранения состояния в файл
         backedTasksManager.createTask(new Task("Поздравить друга с днем рождения",
                 "Подарить подарок", Status.NEW, startTime, duration));
-        backedTasksManager.createTask(new Epic("Вылечиться", "Посетить врачей", Status.NEW, startTime,
-                duration));
+        backedTasksManager.createTask(new Epic("Вылечиться", "Посетить врачей", Status.NEW,
+                LocalDateTime.of(2020,11,12,12,0),
+                Duration.ofHours(3)));
         backedTasksManager.createTask(new Subtask("Посетить врача №1", "Записаться на прием",
-                Status.IN_PROGRESS, backedTasksManager.getEpicById(2), 2, startTime, duration));
+                Status.IN_PROGRESS, backedTasksManager.getEpicById(2), 2,
+                LocalDateTime.of(2021,12,1,00,0), Duration.ofHours(4)));
         backedTasksManager.createTask(new Subtask("Посетить врача №2", "Записаться на прием",
-                Status.DONE, backedTasksManager.getEpicById(2), 2, startTime, duration));
+                Status.DONE, backedTasksManager.getEpicById(2), 2,
+                LocalDateTime.of(2019,12,1,5,0), Duration.ofHours(12)));
         // 2. Добавляем историю
         backedTasksManager.getTaskById(1);
         backedTasksManager.getEpicById(2);

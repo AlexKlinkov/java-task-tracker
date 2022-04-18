@@ -9,7 +9,7 @@ import tracker.model.Task;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-class HistoryManager {
+class HistoryManagerTest {
 
     TaskManager manager;
 

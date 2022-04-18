@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 
 
 public abstract class TaskManagerTest<T extends TaskManager> { // Класс для избежания дублирования кода
-    T manager;
+    protected T manager;
+    LocalDateTime startTime;
+    Duration duration;
 
     abstract void setManager();
 
@@ -22,13 +24,17 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
         setManager();
     }
 
+    @BeforeEach
+    public void initTime () {
+        startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
+        duration = Duration.ofHours(2);
+    }
+
     @Test
     public void createTaskTestWhenTasksExistsAndDoNotIntersection() { // 1.1. Тестим метод создающий задачу, подзадачу,
         // эпик
         // a. Со стандартным поведением
         /// ОБЫЧНАЯ ЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW, startTime, duration);
         manager.createTask(task); // Создаем задачу и добавляем в мапу
         Assertions.assertNotNull(manager.getSaveTask(), "Задача успешно создана"); // Проверка
@@ -56,8 +62,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void createTaskTestWhenTasksExistsAndTasksIntersectionWithEachOther() { // 1.1. Тестим метод создающий задачу
         // Пересечение задач, должно вылетить исключение
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task1 = new Task("Завести кота", "Ухаживать за котом", Status.NEW, startTime, duration);
         Task task2 = new Task("Завести кота", "Ухаживать за котом", Status.NEW, startTime, duration);
         manager.createTask(task1);
@@ -72,8 +76,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void getListOfAllTasksTestShouldBeNoEmptyListWithTask() { // 2.1 Тестим метод для получения списка задач
         // a. Со стандартным поведением
         /// ОБЫЧНАЯ ЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW, startTime, duration);
         manager.createTask(task); // Создали задачу
         Assertions.assertFalse(manager.getListOfAllTasks().isEmpty(), "Получаем не пустой список с задачами");
@@ -85,8 +87,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
         // подзадач
         // a. Со стандартным поведением
         /// ПОДЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Subtask subtask = new Subtask("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 new Epic("Позаботится о животных", "Найти нуждающихся", Status.NEW,
                         startTime, duration), startTime, duration);
@@ -101,8 +101,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void getListOfAllEpicTestShouldBeNoEmptyListWithEpic() { // 2.1 Тестим метод для получения списка эпиков
         // a. Со стандартным поведением
         /// ЭПИЧЕСКАЯ ЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Покормить кота", "Насыпать корм в миску", Status.NEW, startTime, duration);
         manager.createTask(epic); // Создали эпик
         Assertions.assertFalse(manager.getListOfAllEpic().isEmpty(), "Получаем не пустой список с Эпиком");
@@ -114,8 +112,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void deleteAllTasksTestShouldBeEmptyListsMapHistory() { // 2.2 Тестим метод для удаления всех задач
         // a. Со стандартным поведением
         /// ОБЫЧНАЯ ЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW, startTime, duration);
         // задача
         manager.createTask(task); // Создали задачу, поместили ее в мапу
@@ -133,8 +129,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void deleteAllEpicTestShouldBeEmptyListsMapHistory() { // 2.2 Тестим метод для удаления всех задач
         // a. Со стандартным поведением
         /// ЭПИЧЕСКАЯ ЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Покормить кота", "Насыпать корм в миску", Status.NEW, startTime, duration);
         // Эпик
         manager.createTask(epic); // Создали эпик, поместили его в мапу
@@ -153,8 +147,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
         // всех задач
         // a. Со стандартным поведением
         /// ПОДЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic2 = new Epic("Генеральная уборка", "Помыть все помещения", Status.NEW,
                 startTime, duration);
         Subtask subtask = new Subtask("Помыть гостинную", "приобрести моющие средства",
@@ -178,8 +170,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void getTaskByIdTestShouldBeNotNUllWhenDemandTaskWithId1() { // 2.3 Тестим метод для получения задачи по ID
         // a. Со стандартным поведением
         /// ЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // задача
         manager.createTask(task); // Создали задачу, поместили ее в мапу
@@ -191,8 +181,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
         // получения задачи по ID
         // с. Неверный индетификатор задачи
         /// ЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // задача
         manager.createTask(task); // Создали задачу, поместили ее в мапу
@@ -210,8 +198,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void getEpicByIdTestShouldBeNotNUllWhenDemandEpicWithId1() { // 2.3 Тестим метод для получения эпика по ID
         // a. Со стандартным поведением
         /// ЭПИК
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // Эпик
         manager.createTask(epic); // Создали эпик, поместили его в мапу
@@ -222,8 +208,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void ShouldGetMessageAboutMistakeWhenGetNotCorrectEpicID() { // 2.3 Тестим метод для получения эпика по ID
         // с. Неверный индетификатор эпика
         /// ЭПИК
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // Эпик
         manager.createTask(epic); // Создали эпик, поместили его в мапу
@@ -242,8 +226,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
         // получения подзадачи по ID
         // a. Со стандартным поведением
         /// ПОДЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Subtask subtask = new Subtask("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 new Epic("Test", "Test", Status.NEW, startTime, duration), startTime, duration); // Эпик
         manager.createTask(subtask); // Создали подзадачу, поместили ее в мапу
@@ -255,8 +237,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
         // получения подзадачи по ID
         // с. Неверный индетификатор подзадачи
         /// ПОДЗАДАЧА
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Subtask subtask = new Subtask("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 new Epic("Test", "Test", Status.NEW, startTime, duration), startTime, duration);
         // Подзадача
@@ -275,8 +255,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void UpdateTaskShouldBeNewTaskInMapAndListPreviousTaskHaveToDeleteFromHistory() throws Exception {
         // 2.5 Тестим метод Обновление задачи по идентификатору
         // a. Со стандартным поведением
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task1 = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // задача
         Task task2 = new Task("Купить кролика", "Сходить на рынок", Status.NEW, 1,
@@ -296,8 +274,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void UpdateTaskWhenProvideNotCorrectIDAndNotIntersection() { // 2.5 Тестим метод Обновление задачи
         // по идентификатору
         // с. Неверный индетификатор подзадачи
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task1 = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // задача
         Task task2 = new Task("Купить кролика", "Сходить на рынок", Status.NEW, 0,
@@ -311,8 +287,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void UpdateTaskTestWhenTasksIntersect() { // 2.5 Тестим метод Обновление задачи по идентификатору
         // когда задача уже пересекается с другой из списка
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task1 = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // задача
         Task task2 = new Task("Купить кролика", "Сходить на рынок", Status.NEW,
@@ -328,8 +302,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void UpdateSubTaskShouldBeNewSubTaskInMapAndListPreviousSubTaskHaveToDeleteFromHistory() throws Exception {
         // 2.5 Тестим метод Обновление подзадачи по идентификатору
         // a. Со стандартным поведением, когда подзадачи не пересекаются
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Найти кота", "Сходить на рынок", Status.IN_PROGRESS, startTime, duration);
         manager.createTask(epic);
         Subtask subtask1 = new Subtask("Покормить кота", "Насыпать корм в миску", Status.IN_PROGRESS,
@@ -353,8 +325,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void UpdateSubTaskWhenProvideNotCorrectID() { // 2.5 Тестим метод Обновление подзадачи по идентификатору
         // с. Неверный индетификатор подзадачи
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Найти кота", "Сходить на рынок", Status.IN_PROGRESS, startTime, duration);
         manager.createTask(epic);
         Subtask subtask1 = new Subtask("Покормить кота", "Насыпать корм в миску", Status.IN_PROGRESS,
@@ -372,8 +342,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     public void UpdateEpicShouldBeNewEpicInMapAndListPreviousEpicHaveToDeleteFromHistory() throws Exception {
         // 2.5 Тестим метод Обновление эпика по идентификатору
         // a. Со стандартным поведением
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic1 = new Epic("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // эпик
         Epic epic2 = new Epic("Купить кролика", "Сходить на рынок", Status.NEW, 1,
@@ -392,8 +360,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void UpdateEpicWhenProvideNotCorrectID() { // 2.5 Тестим метод Обновление задачи по идентификатору
         // с. Неверный индетификатор подзадачи
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic1 = new Epic("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // эпик
         Epic epic2 = new Epic("Купить кролика", "Сходить на рынок", Status.NEW,
@@ -407,8 +373,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void DeleteTaskByIDTestWithCorrectID() { // 2.6 Удаление задачи по идентификатору
         // a. Со стандартным поведением
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task1 = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // задача
         manager.createTask(task1); // Создали задачу, записали ее в мапу
@@ -424,8 +388,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void DeleteTaskByIDWhenProvideNotCorrectID() { // // 2.6 Удаление задачи по идентификатору
         // с. Неверный индетификатор подзадачи
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Task task1 = new Task("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // задача
         manager.createTask(task1); // Создали задачу, записали ее в мапу
@@ -438,8 +400,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void DeleteSubTaskByIDTestWithCorrectID() { // 2.6 Удаление подзадачи по идентификатору
         // a. Со стандартным поведением
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Найти кота", "Сходить на рынок", Status.NEW, startTime, duration);
         manager.createTask(epic); // Эпик, без подзадачи нельзя создать подзадачу
         Subtask subtask1 = new Subtask("Покормить кота", "Насыпать корм в миску", Status.IN_PROGRESS,
@@ -459,8 +419,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void DeleteSubTaskByIDWhenProvideNotCorrectID() { // 2.6 Удаление подзадачи по идентификатору
         // с. Неверный индетификатор подзадачи
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Найти кота", "Сходить на рынок", Status.IN_PROGRESS, startTime, duration);
         manager.createTask(epic);
         Subtask subtask1 = new Subtask("Купить кролика", "Сходить на рынок", Status.DONE,
@@ -475,8 +433,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void DeleteEpicByIDTestWithCorrectID() throws Exception { // 2.6 Удаление эпика по идентификатору
         // a. Со стандартным поведением
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic = new Epic("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // эпик
         Subtask subtask = new Subtask("Купить кролика", "Сходить на рынок", Status.NEW,
@@ -497,8 +453,6 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     @Test
     public void DeleteEpicByIDWhenProvideNotCorrectID() { // 2.6 Удаление эпика по идентификатору
         // с. Неверный индетификатор подзадачи
-        LocalDateTime startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
-        Duration duration = Duration.ofHours(2);
         Epic epic1 = new Epic("Покормить кота", "Насыпать корм в миску", Status.NEW,
                 startTime, duration); // эпик
         manager.createTask(epic1); // Создали задачу, записали ее в мапу
