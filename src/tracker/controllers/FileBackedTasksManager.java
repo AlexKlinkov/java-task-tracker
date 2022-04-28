@@ -313,4 +313,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("Выводим в консоль историю просмотров из файла");
         System.out.println(loadFromFile(newFile).getHistoryManager().getHistory());
     }
+
+    public Map<Integer, Task> getSortedMapWithAllTaskSubTaskAndEpic() {
+        return sortedMapWithAllTaskSubTaskAndEpic;
+    }
+
+    public void setSortedMapWithAllTaskSubTaskAndEpic(Map<Integer, Task> sortedMapWithAllTaskSubTaskAndEpic) {
+        this.sortedMapWithAllTaskSubTaskAndEpic = sortedMapWithAllTaskSubTaskAndEpic;
+    }
 }

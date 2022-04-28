@@ -1,26 +1,24 @@
 package tracker.model;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
-    int id = 0;
-    public Status status = Status.NEW; // Статус по умолчанию
     ArrayList<Subtask> listWithAllSubTasks = new ArrayList<>(); // список всех подзадач эпика
-    private TypeOfTask TYPE = TypeOfTask.EPIC; // Поле с типом задачи
     LocalDateTime endTime;
 
     public Epic(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         super(name, description, status, startTime, duration);
+        this.TYPE = TypeOfTask.EPIC;
     }
 
     // Конструктор для обновления подзадач, указываем айди задачи, которую нужно обновить
     public Epic(String name, String description, Status status, int id, LocalDateTime startTime, Duration duration) {
         super(name, description, status, id, startTime, duration);
         this.id = id;
+        this.TYPE = TypeOfTask.EPIC;
     }
 
     @Override
@@ -49,21 +47,23 @@ public class Epic extends Task {
     @Override
     public String toString() {
         return "Epic{" +
-                "id=" + id +
-                ", name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status=" + status +
-                ", startTime=" + startTime +
-                ", duration=" + duration +
-                ", endTime=" + endTime +
+                "id=" + this.id +
+                ", name='" + this.getName() + '\'' +
+                ", description='" + this.getDescription() + '\'' +
+                ", status=" + this.status +
+                ", startTime=" + this.startTime +
+                ", duration=" + this.duration +
+                ", endTime=" + this.endTime +
                 '}';
     }
 
     // Метод для установки статуса Епика
-    ArrayList<Status> listOfAllStatusSubTasks = new ArrayList<>(); // Список со всеми статусами подзадач данного эпика
+    transient ArrayList <Status> listOfAllStatusSubTasks = new ArrayList<>(); // Список со всеми статусами подзадач данного эпика
 
     public Status setStatusForEpic() {
-        listOfAllStatusSubTasks.clear(); // очищаем список перед каждым вызовом метода
+        if (listOfAllStatusSubTasks != null) {
+            listOfAllStatusSubTasks.clear(); // очищаем список перед каждым вызовом метода
+        }
         if (getListWithAllSubTasks().isEmpty()) {
             return Status.NEW;
         } else {
@@ -155,5 +155,6 @@ public class Epic extends Task {
                 Objects.equals(((Epic) o).getDescription(), epic.getDescription()) &&
                 Objects.equals(status, epic.status);
     }
+
 }
 

@@ -337,7 +337,7 @@ public class InMemoryTaskManager implements TaskManager {
     };
 
     // Делаем одно отсортированное множество
-    protected Set<Task> setForSortingTaskAnsSubTask = new TreeSet(comparatorStartTime);
+    public Set<Task> setForSortingTaskAnsSubTask = new TreeSet(comparatorStartTime);
 
     public List<Task> getPrioritizedTasks() { // Метод возвращающий список задач и подзадач в заданном порядке.
         ArrayList<Task> sortedListWithTaskAnsSubtask = new ArrayList<>(); // отсортированный список для возвращения

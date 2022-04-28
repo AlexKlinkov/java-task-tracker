@@ -5,21 +5,20 @@ import java.time.LocalDateTime;
 
 public class Subtask extends Task {
     private Epic epic; // Подзадача приходит к конкретному эпику
-    private int EpicId; // Для нового конструктора, что при воссоздании сабтаска из файла привязать его к эпику
-    int id = 0; // идентификатор устанавливается менеджером
-    private TypeOfTask TYPE = TypeOfTask.SUBTASK; // Поле с типом задачи
-
+    transient int EpicId; // Для нового конструктора, что при воссоздании сабтаска из файла привязать его к эпику
     public Subtask(String name, String description, Status status, Epic epic, LocalDateTime startTime,
                    Duration duration) {
         super(name, description, status, startTime, duration);
         this.epic = epic;
+        this.TYPE = TypeOfTask.SUBTASK;
     }
 
-    public Subtask(String name, String description, Status status, int EpicI, int id, LocalDateTime startTime,
+    public Subtask(String name, String description, Status status, int EpicId, int id, LocalDateTime startTime,
                    Duration duration) {
         super(name, description, status, startTime, duration);
         this.EpicId = EpicId;
         this.id = id;
+        this.TYPE = TypeOfTask.SUBTASK;
     }
 
     // конструктор необходимый для обновления конкретной подзадачи, конкретного эпика по ID
@@ -28,6 +27,7 @@ public class Subtask extends Task {
         super(name, description, status, startTime, duration);
         this.epic = epic;
         this.id = id;
+        this.TYPE = TypeOfTask.SUBTASK;
     }
 
     @Override
@@ -61,13 +61,21 @@ public class Subtask extends Task {
     @Override
     public String toString() {
         return "SubTask{" +
-                "id=" + id +
-                ", name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status=" + getStatus() +
-                ", startTime=" + startTime +
-                ", duration=" + duration +
+                "id=" + this.id +
+                ", name='" + this.getName() + '\'' +
+                ", description='" + this.getDescription() + '\'' +
+                ", status=" + this.getStatus() +
+                ", startTime=" + this.startTime +
+                ", duration=" + this.duration +
                 '}';
+    }
+
+    public int getEpicId() {
+        return EpicId;
+    }
+
+    public void setEpicId(int epicId) {
+        EpicId = epicId;
     }
 }
 

@@ -75,12 +75,16 @@ public class InMemoryHistoryManager implements HistoryManager {
             List<Task> arrayListForReturn = new ArrayList<>(); // лист для задач
             if (head != null) { // если список не пуст
                 arrayListForReturn.add(head.data); // то добавляем его голову в ArrayList
-                myNode<Task> nextLink = head.getNext(); // Получаем ссылку на следующий элемент
-                while (nextLink != null) { // и если следующий элемент есть, добавляем его в ArrayList
-                    arrayListForReturn.add(nextLink.data);
-                    nextLink = myNodeTask.get(nextLink.data.getId()).getNext(); // Вставляем следующий элемент
-                    if (head.getData() == null) {
-                        historyOfTask.removeNode(head);
+                if (historyOfTask.size == 1) {
+                    return arrayListForReturn;
+                } else {
+                    myNode<Task> nextLink = head.getNext(); // Получаем ссылку на следующий элемент
+                    while (nextLink != null) { // и если следующий элемент есть, добавляем его в ArrayList
+                        arrayListForReturn.add(nextLink.data);
+                        nextLink = myNodeTask.get(nextLink.data.getId()).getNext(); // Вставляем следующий элемент
+                        if (head.getData() == null) {
+                            historyOfTask.removeNode(head);
+                        }
                     }
                 }
             }

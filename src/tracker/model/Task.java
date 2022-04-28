@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-    private int id = 0; // идентификатор
+    protected int id = 0; // идентификатор
     private String name; // Кратко описывающее суть задачи (например, «Переезд»).
     private String description; // Для раскрытия деталей задачи.
-    private Status status; // 1. NEW - новая; 2. IN_PROGRESS - в процессе, 3. DONE - выполнена.
+    protected Status status; // 1. NEW - новая; 2. IN_PROGRESS - в процессе, 3. DONE - выполнена.
     protected LocalDateTime startTime; // Начало задачи
     protected Duration duration; // Продолжение задачи
-    private TypeOfTask TYPE = TypeOfTask.TASK; // Поле с типом задачи
+    protected TypeOfTask TYPE = TypeOfTask.TASK; // Поле с типом задачи
 
     public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.name = name;
@@ -66,12 +66,12 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", startTime=" + startTime +
-                ", duration=" + duration +
+                "id=" + this.id +
+                ", name='" + this.name + '\'' +
+                ", description='" + this.description + '\'' +
+                ", status=" + this.status +
+                ", startTime=" + this.startTime +
+                ", duration=" + this.duration +
                 '}';
     }
 
@@ -104,4 +104,5 @@ public class Task {
     public Duration getDuration() {
         return duration;
     }
+
 }

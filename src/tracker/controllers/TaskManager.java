@@ -6,6 +6,7 @@ import tracker.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -50,5 +51,7 @@ public interface TaskManager {
 
     HashMap<Integer, Epic> getSaveEpic(); // возвращает коллекцию эпиков
 
-    HistoryManager getHistoryManager();
+    HistoryManager getHistoryManager(); // Возвращает историю
+
+    List<Task> getPrioritizedTasks(); // Возвращает список задач отсортированных по приоритету
 }
