@@ -1,7 +1,7 @@
 package tracker.controllers;
 
-import tracker.Server.HTTPTaskManager;
-import tracker.Server.KVTaskClient;
+import tracker.server.HTTPTaskManager;
+import tracker.server.KVTaskClient;
 
 import java.io.File;
 

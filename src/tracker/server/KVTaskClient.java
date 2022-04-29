@@ -1,4 +1,4 @@
-package tracker.Server;
+package tracker.server;
 
 import java.io.IOException;
 import java.net.URI;

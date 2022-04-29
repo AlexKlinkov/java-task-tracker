@@ -1,4 +1,4 @@
-package tracker.Server;
+package tracker.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

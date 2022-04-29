@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,7 +8,9 @@ import tracker.model.Epic;
 import tracker.model.Status;
 import tracker.model.Subtask;
 import tracker.model.Task;
+import tracker.server.KVServer;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -16,18 +19,26 @@ public abstract class TaskManagerTest<T extends TaskManager> { // Класс д�
     protected T manager;
     LocalDateTime startTime;
     Duration duration;
+    KVServer kvServer;
 
     abstract void setManager();
 
     @BeforeEach
-    public void initialization() {
+    public void initialization() throws IOException {
+        kvServer = new KVServer();
+        kvServer.start();
         setManager();
     }
 
     @BeforeEach
-    public void initTime () {
+    public void initTime() {
         startTime = LocalDateTime.of(2022, 04, 01, 12, 0);
         duration = Duration.ofHours(2);
+    }
+
+    @AfterEach
+    void stopKVServer() {
+        kvServer.stop();
     }
 
     @Test

@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -5,17 +6,27 @@ import tracker.controllers.Managers;
 import tracker.controllers.TaskManager;
 import tracker.model.Status;
 import tracker.model.Task;
+import tracker.server.KVServer;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 class HistoryManagerTest {
 
     TaskManager manager;
+    KVServer kvServer;
 
     @BeforeEach
-    void initialization() {
+    void initialization() throws IOException {
+        kvServer = new KVServer();
+        kvServer.start();
         manager = Managers.getDefault();
+    }
+
+    @AfterEach
+    void stopServer() {
+        kvServer.stop();
     }
 
     @Test
@@ -34,7 +45,8 @@ class HistoryManagerTest {
                 startTime, duration);
         manager.getHistoryManager().addTask(task1); // Добавили задачу в историю
         manager.getHistoryManager().addTask(task2); // Добавили задачу в историю
-        Assertions.assertEquals(1, manager.getHistoryManager().getSize(), "В истории недолжно быть одинаковых задач");
+        Assertions.assertEquals(1, manager.getHistoryManager().getSize(), "В истории недолжно быть " +
+                "одинаковых задач");
     }
 
     @Test
@@ -44,7 +56,8 @@ class HistoryManagerTest {
         Task task = new Task("Бросить курить", "Купить никотиновые пластыри", Status.NEW,
                 startTime, duration);
         manager.getHistoryManager().addTask(task); // Добавили задачу в историю
-        Assertions.assertFalse(manager.getHistoryManager().getHistory().isEmpty(), "История не должна быть пустой");
+        Assertions.assertFalse(manager.getHistoryManager().getHistory().isEmpty(), "История не должна " +
+                "быть пустой");
     }
 
     @Test

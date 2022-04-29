@@ -1,4 +1,4 @@
-package tracker.Server;
+package tracker.server;
 
 import com.sun.net.httpserver.HttpServer;
 import tracker.controllers.TaskManager;

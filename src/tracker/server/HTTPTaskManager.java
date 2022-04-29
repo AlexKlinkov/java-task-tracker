@@ -1,4 +1,4 @@
-package tracker.Server;
+package tracker.server;
 
 import tracker.controllers.FileBackedTasksManager;
 import tracker.controllers.HistoryManager;
@@ -12,12 +12,12 @@ import java.util.*;
 public class HTTPTaskManager extends FileBackedTasksManager {
 
     private final String urlString; // Поле адрес KVServer, к которому будем обращаться
-    KVTaskClient kvTaskClient; // Связываем менеджера с клиентом отправляющим запрос на сервер (KVServer)
-    final String APY_KEY; // Уникальный ключ для доступа к серверу
+    private KVTaskClient kvTaskClient; // Связываем менеджера с клиентом отправляющим запрос на сервер (KVServer)
+    private final String APY_KEY; // Уникальный ключ для доступа к серверу
     // Поле для возврата задач, подзадач, эпиков с KVServer
-    Map<String, String> forReturnConditionManagerTaskAndSubtaskAndEpic = new LinkedHashMap<>();
+    private Map<String, String> forReturnConditionManagerTaskAndSubtaskAndEpic = new LinkedHashMap<>();
     // Поле для возврата истории с KVServer
-    List<String> forReturnConditionManagerHistory = new LinkedList<>();
+    private List<String> forReturnConditionManagerHistory = new LinkedList<>();
     // Объект класса содержащий все требуемые типы Json
     MyJsonForDifferentTypeOfTasks gson = new MyJsonForDifferentTypeOfTasks();
 
@@ -46,15 +46,17 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         Set<String> stringForResponse = new LinkedHashSet<>();
         if (!getHistoryManager().getHistory().isEmpty()) {
             for (Task task : getHistoryManager().getHistory()) {
-                if (String.valueOf(task.getTYPE()).equals("EPIC")) {
-                    String responseEpic = String.join("-----", gson.gsonForEpic.toJson(task));
-                    stringForResponse.add(responseEpic);
-                } else if (String.valueOf(task.getTYPE()).equals("SUBTASK")) {
-                    String responseSubTask = String.join("-----", gson.gsonForSubTask.toJson(task));
-                    stringForResponse.add(responseSubTask);
-                } else if (String.valueOf(task.getTYPE()).equals("TASK")) {
-                    String responseTask = String.join("-----", gson.gsonForTask.toJson(task));
-                    stringForResponse.add(responseTask);
+                if (task != null) {
+                    if (String.valueOf(task.getTYPE()).equals("EPIC")) {
+                        String responseEpic = String.join("-----", gson.gsonForEpic.toJson(task));
+                        stringForResponse.add(responseEpic);
+                    } else if (String.valueOf(task.getTYPE()).equals("SUBTASK")) {
+                        String responseSubTask = String.join("-----", gson.gsonForSubTask.toJson(task));
+                        stringForResponse.add(responseSubTask);
+                    } else if (String.valueOf(task.getTYPE()).equals("TASK")) {
+                        String responseTask = String.join("-----", gson.gsonForTask.toJson(task));
+                        stringForResponse.add(responseTask);
+                    }
                 }
             }
             int count = 0;

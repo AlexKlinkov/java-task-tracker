@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 public class InMemoryTasksManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
-
     @Override
     void setManager() {
         manager = (InMemoryTaskManager) Managers.getDefault();
@@ -34,5 +33,4 @@ public class InMemoryTasksManagerTest extends TaskManagerTest<InMemoryTaskManage
         Assertions.assertEquals(task1, manager.getPrioritizedTasks().get(2),
                 "Последний элемент будет с нулевым значением времени");
     }
-
 }
